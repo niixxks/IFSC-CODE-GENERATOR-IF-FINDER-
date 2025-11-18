@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const historyList = document.getElementById("history");
   const resultContainer = document.getElementById("results");
   const loading = document.getElementById("loading");
+  const clearBtn = document.getElementById("clearHistoryBtn");
 
   form.addEventListener("submit", function(e) {
     e.preventDefault();
@@ -66,6 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
       let userHistory = JSON.parse(localStorage.getItem("history_" + username)) || [];
       userHistory.unshift({ bank, state, district, ifsc });
       localStorage.setItem("history_" + username, JSON.stringify(userHistory));
+      if (clearBtn) clearBtn.disabled = false;
     }, 1000);
   });
 
@@ -76,4 +78,14 @@ document.addEventListener("DOMContentLoaded", () => {
     li.innerHTML = `<i class="fas fa-history text-warning me-2"></i> ${entry.bank}, ${entry.state}, ${entry.district} → <b>${entry.ifsc}</b>`;
     historyList.appendChild(li);
   });
+
+  if (clearBtn) {
+    clearBtn.disabled = savedHistory.length === 0;
+    clearBtn.addEventListener("click", function() {
+      if (!confirm("Are you sure you want to clear your search history?")) return;
+      localStorage.removeItem("history_" + username);
+      historyList.innerHTML = "";
+      clearBtn.disabled = true;
+    });
+  }
 });
